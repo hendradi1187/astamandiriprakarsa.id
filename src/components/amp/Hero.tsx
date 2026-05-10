@@ -56,7 +56,7 @@ export const Hero = () => {
             className="mt-8 flex flex-wrap items-center gap-3"
           >
             <a
-              href="#cta"
+              href="/wizard"
               className="group inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground shadow-red transition-all duration-300 hover:shadow-glow hover:scale-[1.03] active:scale-[0.98]"
             >
               Mulai Perencanaan
