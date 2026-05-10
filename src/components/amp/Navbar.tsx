@@ -52,7 +52,7 @@ export const Navbar = () => {
 
         <div className="flex items-center gap-3">
           <a
-            href="#cta"
+            href="/wizard"
             className="hidden sm:inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground px-5 py-2.5 text-sm font-semibold shadow-red hover:shadow-glow hover:scale-[1.03] active:scale-[0.98] transition-all duration-300"
           >
             Mulai Perencanaan
@@ -90,7 +90,7 @@ export const Navbar = () => {
               ))}
               <li>
                 <a
-                  href="#cta"
+                  href="/wizard"
                   onClick={() => setOpen(false)}
                   className="mt-2 block rounded-full bg-primary text-primary-foreground px-4 py-3 text-center text-sm font-semibold shadow-red"
                 >
