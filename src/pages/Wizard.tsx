@@ -25,7 +25,7 @@ import {
   Wind,
   Trees,
   Lightbulb,
-  HeadphonesIcon,
+  Headphones,
   MessageCircle,
   ImageIcon,
   PenTool,
