@@ -527,7 +527,7 @@ const Pill = ({ active, onClick, children }: { active: boolean; onClick: () => v
 );
 
 /* ---------- STEP 2 ---------- */
-const StepEstimate = ({ form, estimate }: { form: FormState; estimate: ReturnType<typeof useMemo<any>> }) => (
+const StepEstimate = ({ form, estimate }: { form: FormState; estimate: any }) => (
   <div className="grid gap-6 lg:grid-cols-5">
     <div className="lg:col-span-3 rounded-3xl border border-border bg-background p-6 lg:p-8 space-y-4">
       <h2 className="text-2xl font-bold tracking-tight">Estimasi Proyek Anda</h2>
