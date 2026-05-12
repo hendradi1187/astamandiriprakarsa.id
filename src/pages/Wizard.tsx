@@ -258,7 +258,7 @@ const Wizard = () => {
             <div className="mt-auto rounded-2xl border border-border bg-card p-4">
               <div className="flex items-start gap-3">
                 <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-muted">
-                  <HeadphonesIcon className="h-5 w-5 text-foreground/70" />
+                  <Headphones className="h-5 w-5 text-foreground/70" />
                 </div>
                 <div className="text-xs">
                   <div className="font-semibold text-foreground">Butuh bantuan?</div>
