@@ -46,6 +46,7 @@ import { Slider } from "@/components/ui/slider";
 import { toast } from "@/hooks/use-toast";
 
 type Style = "modern" | "tropical" | "minimalist" | "classic";
+type DesignPackageId = "p1" | "p2" | "p3" | "p4";
 
 interface FormState {
   name: string;
@@ -56,6 +57,7 @@ interface FormState {
   bedrooms: number;
   style: Style;
   budgetTier: "standard" | "premium" | "luxury";
+  designPackage: DesignPackageId;
   city: string;
   notes: string;
 }
@@ -69,6 +71,7 @@ const initialForm: FormState = {
   bedrooms: 3,
   style: "modern",
   budgetTier: "premium",
+  designPackage: "p2",
   city: "",
   notes: "",
 };
@@ -88,6 +91,82 @@ const styleOptions: { value: Style; label: string; icon: typeof Home }[] = [
 ];
 
 const tierMultiplier = { standard: 4_500_000, premium: 6_500_000, luxury: 9_500_000 } as const;
+
+/**
+ * Paket Desain Arsitektur — sumber: AMP Pricelist 2024 (resmi dari founder).
+ * Harga di-base, untuk Area Hook (pojok) ada surcharge yang belum di-handle di sini.
+ * Paket 5 (Interior Only — Rp 400rb/m²) tidak dimasukkan karena beda kategori
+ * (untuk renovasi interior existing, bukan rumah baru).
+ */
+const designPackages: {
+  id: DesignPackageId;
+  name: string;
+  title: string;
+  pricePerM2: number;
+  pricePerM2Over2Floors?: number; // hanya untuk Paket 4
+  durationWeeks: number;
+  durationWeeksOver2Floors?: number;
+  deliverables: string[];
+  badge?: "Direkomendasikan" | "Paling Lengkap" | "Hemat";
+}[] = [
+  {
+    id: "p1",
+    name: "Paket 1",
+    title: "Preliminary + Schematic Design",
+    pricePerM2: 165_000,
+    durationWeeks: 2,
+    deliverables: [
+      "Gambar 3D Eksterior",
+      "Gambar Skematik Denah, Tampak & Potongan",
+    ],
+    badge: "Hemat",
+  },
+  {
+    id: "p2",
+    name: "Paket 2",
+    title: "+ DED Arsitektur",
+    pricePerM2: 250_000,
+    durationWeeks: 4,
+    deliverables: [
+      "Semua di Paket 1 + 3D Interior",
+      "Gambar DED Arsitektur",
+      "Spesifikasi Bangunan",
+    ],
+    badge: "Direkomendasikan",
+  },
+  {
+    id: "p3",
+    name: "Paket 3",
+    title: "+ DED MEP & Struktur",
+    pricePerM2: 300_000,
+    durationWeeks: 6,
+    deliverables: [
+      "Semua di Paket 2",
+      "Gambar DED MEP (Mekanikal, Elektrikal, Plumbing)",
+      "Gambar DED Struktur",
+    ],
+  },
+  {
+    id: "p4",
+    name: "Paket 4",
+    title: "+ Detail Interior (Lengkap)",
+    pricePerM2: 300_000,
+    pricePerM2Over2Floors: 330_000,
+    durationWeeks: 8,
+    durationWeeksOver2Floors: 10,
+    deliverables: [
+      "Semua di Paket 3",
+      "Gambar Detail Interior",
+    ],
+    badge: "Paling Lengkap",
+  },
+];
+
+const getPackagePrice = (pkg: typeof designPackages[number], floors: number) =>
+  floors > 2 && pkg.pricePerM2Over2Floors ? pkg.pricePerM2Over2Floors : pkg.pricePerM2;
+
+const getPackageDuration = (pkg: typeof designPackages[number], floors: number) =>
+  floors > 2 && pkg.durationWeeksOver2Floors ? pkg.durationWeeksOver2Floors : pkg.durationWeeks;
 
 const formatIDR = (n: number) =>
   new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(n);
@@ -126,11 +205,13 @@ const Wizard = () => {
     // Luas bangunan diturunkan dari Luas Tanah × Jumlah Lantai (revisi founder)
     const builtArea = form.landSize * form.floors;
     const total = builtArea * perM2;
-    // Biaya desain minimum Rp 200rb/m² sesuai pricelist resmi AMP (revisi founder)
-    const DESIGN_FEE_PER_M2 = 200_000;
-    const designFee = builtArea * DESIGN_FEE_PER_M2;
+    // Biaya desain dari paket yang dipilih (sumber: AMP Pricelist 2024)
+    const pkg = designPackages.find((p) => p.id === form.designPackage) || designPackages[1];
+    const designFeePerM2 = getPackagePrice(pkg, form.floors);
+    const designFee = builtArea * designFeePerM2;
+    const designWeeks = getPackageDuration(pkg, form.floors);
     const commitment = 2_500_000;
-    const weeks = Math.max(8, Math.round(builtArea / 12));
+    const buildWeeks = Math.max(8, Math.round(builtArea / 12));
     const breakdown = [
       { label: "Pekerjaan Struktur", pct: 35 },
       { label: "Pekerjaan Arsitektur", pct: 30 },
@@ -138,7 +219,18 @@ const Wizard = () => {
       { label: "Finishing", pct: 10 },
       { label: "Lain - lain", pct: 5 },
     ].map((b) => ({ ...b, value: Math.round((total * b.pct) / 100) }));
-    return { perM2, total, designFee, commitment, weeks, builtArea, designFeePerM2: DESIGN_FEE_PER_M2, breakdown };
+    return {
+      perM2,
+      total,
+      designFee,
+      designFeePerM2,
+      designWeeks,
+      commitment,
+      weeks: buildWeeks,
+      builtArea,
+      package: pkg,
+      breakdown,
+    };
   }, [form]);
 
   const update = <K extends keyof FormState>(k: K, v: FormState[K]) =>
@@ -202,6 +294,7 @@ const Wizard = () => {
                 <SummaryRow icon={BedDouble} label="Kamar Tidur" value={`${form.bedrooms} Kamar`} />
                 <SummaryRow icon={Palette} label="Gaya Arsitektur" value={<span className="capitalize">{form.style}</span>} />
                 <SummaryRow icon={WalletIcon} label="Tier Anggaran" value={<span className="capitalize">{form.budgetTier}</span>} />
+                <SummaryRow icon={PenTool} label="Paket Desain" value={estimate.package.name} />
                 <div className="pt-1 text-right text-xs text-muted-foreground">
                   Rp {formatIDRShort(estimate.perM2)} / m²
                 </div>
@@ -466,7 +559,7 @@ const StepQuestionnaire = ({
         </div>
       </Field>
 
-      <Field label="Tier Anggaran" className="lg:col-span-2">
+      <Field label="Tier Anggaran" hint="Menentukan biaya pembangunan per m²." className="lg:col-span-2">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           {(["standard", "premium", "luxury"] as const).map((t) => {
             const active = form.budgetTier === t;
@@ -486,6 +579,60 @@ const StepQuestionnaire = ({
         </div>
       </Field>
 
+      <Field
+        label="Paket Desain Arsitektur"
+        hint="Menentukan ruang lingkup gambar & deliverable dari tim arsitek AMP. Harga sesuai pricelist resmi."
+        className="lg:col-span-2"
+      >
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          {designPackages.map((pkg) => {
+            const active = form.designPackage === pkg.id;
+            const price = getPackagePrice(pkg, form.floors);
+            const weeks = getPackageDuration(pkg, form.floors);
+            return (
+              <button
+                key={pkg.id}
+                onClick={() => update("designPackage", pkg.id)}
+                className={`relative rounded-2xl border p-4 text-left transition flex flex-col ${
+                  active ? "border-primary bg-primary/5 ring-1 ring-primary/30" : "border-border hover:border-foreground/30"
+                }`}
+              >
+                {pkg.badge && (
+                  <span
+                    className={`absolute -top-2 right-3 rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                      pkg.badge === "Direkomendasikan"
+                        ? "bg-primary text-primary-foreground"
+                        : pkg.badge === "Paling Lengkap"
+                        ? "bg-foreground text-background"
+                        : "bg-muted text-foreground"
+                    }`}
+                  >
+                    {pkg.badge}
+                  </span>
+                )}
+                <div className="text-xs font-semibold text-muted-foreground">{pkg.name}</div>
+                <div className="mt-0.5 text-sm font-bold leading-tight">{pkg.title}</div>
+                <div className="mt-3 text-base font-extrabold text-foreground">
+                  {formatIDR(price)}<span className="text-[10px] font-medium text-muted-foreground"> / m²</span>
+                </div>
+                <div className="mt-0.5 text-[11px] text-muted-foreground">± {weeks} minggu</div>
+                <ul className="mt-3 space-y-1.5 text-[11px] text-muted-foreground">
+                  {pkg.deliverables.map((d) => (
+                    <li key={d} className="flex items-start gap-1.5">
+                      <Check className="mt-0.5 h-3 w-3 flex-shrink-0 text-primary" />
+                      <span className="leading-snug">{d}</span>
+                    </li>
+                  ))}
+                </ul>
+              </button>
+            );
+          })}
+        </div>
+        <p className="mt-2 text-[11px] text-muted-foreground">
+          *Harga belum termasuk Area Hook (Pojok) yang punya surcharge Rp 20rb/m². Untuk Paket 4 dengan bangunan ≥3 lantai, harga menjadi Rp 330rb/m².
+        </p>
+      </Field>
+
       <Field label="Catatan Tambahan" className="lg:col-span-2">
         <textarea
           rows={3}
@@ -499,9 +646,12 @@ const StepQuestionnaire = ({
   </div>
 );
 
-const Field = ({ label, children, className = "" }: { label: string; children: React.ReactNode; className?: string }) => (
+const Field = ({ label, hint, children, className = "" }: { label: string; hint?: string; children: React.ReactNode; className?: string }) => (
   <div className={`space-y-2 ${className}`}>
-    <Label>{label}</Label>
+    <div className="space-y-0.5">
+      <Label>{label}</Label>
+      {hint && <p className="text-[11px] text-muted-foreground leading-snug">{hint}</p>}
+    </div>
     {children}
   </div>
 );
@@ -538,9 +688,10 @@ const StepEstimate = ({ form, estimate }: { form: FormState; estimate: any }) =>
         <KV k="Jumlah Lantai" v={form.floors} />
         <KV k="Luas Bangunan (Estimasi)" v={`${estimate.builtArea} m²`} />
         <KV k="Gaya" v={<span className="capitalize">{form.style}</span>} />
-        <KV k="Tier" v={<span className="capitalize">{form.budgetTier}</span>} />
-        <KV k="Harga / m²" v={formatIDR(estimate.perM2)} />
-        <KV k="Estimasi Waktu" v={`${estimate.weeks} minggu`} />
+        <KV k="Tier Bangunan" v={<span className="capitalize">{form.budgetTier}</span>} />
+        <KV k="Harga Bangun / m²" v={formatIDR(estimate.perM2)} />
+        <KV k="Paket Desain" v={`${estimate.package.name} — ${estimate.package.title}`} />
+        <KV k="Estimasi Waktu" v={`${estimate.designWeeks}+${estimate.weeks} minggu`} />
       </div>
     </div>
     <div className="lg:col-span-2">
@@ -549,7 +700,7 @@ const StepEstimate = ({ form, estimate }: { form: FormState; estimate: any }) =>
         <div className="mt-3 text-3xl font-bold lg:text-4xl">{formatIDR(estimate.total)}</div>
         <div className="mt-6 space-y-3 border-t border-white/10 pt-5 text-sm">
           <div className="flex items-center justify-between">
-            <span className="text-secondary-foreground/70">Biaya Desain <span className="text-[11px]">(Rp 200rb/m²)</span></span>
+            <span className="text-secondary-foreground/70">Biaya Desain <span className="text-[11px]">({estimate.package.name})</span></span>
             <span className="font-semibold">{formatIDR(estimate.designFee)}</span>
           </div>
           <div className="flex items-center justify-between">
