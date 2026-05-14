@@ -52,7 +52,6 @@ interface FormState {
   phone: string;
   email: string;
   landSize: number;
-  buildingSize: number;
   floors: number;
   bedrooms: number;
   style: Style;
@@ -66,7 +65,6 @@ const initialForm: FormState = {
   phone: "",
   email: "",
   landSize: 120,
-  buildingSize: 90,
   floors: 2,
   bedrooms: 3,
   style: "modern",
@@ -125,10 +123,14 @@ const Wizard = () => {
 
   const estimate = useMemo(() => {
     const perM2 = tierMultiplier[form.budgetTier];
-    const total = form.buildingSize * perM2 * form.floors;
-    const designFee = Math.round(total * 0.04);
+    // Luas bangunan diturunkan dari Luas Tanah × Jumlah Lantai (revisi founder)
+    const builtArea = form.landSize * form.floors;
+    const total = builtArea * perM2;
+    // Biaya desain minimum Rp 200rb/m² sesuai pricelist resmi AMP (revisi founder)
+    const DESIGN_FEE_PER_M2 = 200_000;
+    const designFee = builtArea * DESIGN_FEE_PER_M2;
     const commitment = 2_500_000;
-    const weeks = Math.max(8, Math.round(form.buildingSize / 12));
+    const weeks = Math.max(8, Math.round(builtArea / 12));
     const breakdown = [
       { label: "Pekerjaan Struktur", pct: 35 },
       { label: "Pekerjaan Arsitektur", pct: 30 },
@@ -136,7 +138,7 @@ const Wizard = () => {
       { label: "Finishing", pct: 10 },
       { label: "Lain - lain", pct: 5 },
     ].map((b) => ({ ...b, value: Math.round((total * b.pct) / 100) }));
-    return { perM2, total, designFee, commitment, weeks, breakdown };
+    return { perM2, total, designFee, commitment, weeks, builtArea, designFeePerM2: DESIGN_FEE_PER_M2, breakdown };
   }, [form]);
 
   const update = <K extends keyof FormState>(k: K, v: FormState[K]) =>
@@ -195,7 +197,7 @@ const Wizard = () => {
               </div>
               <div className="mt-4 space-y-3 text-sm">
                 <SummaryRow icon={Ruler} label="Luas Tanah" value={`${form.landSize} m²`} />
-                <SummaryRow icon={Home} label="Luas Bangunan" value={`${form.buildingSize} m²`} />
+                <SummaryRow icon={Home} label="Luas Bangunan" value={<span className="text-muted-foreground/80">{estimate.builtArea} m² <span className="text-[10px]">(estimasi)</span></span>} />
                 <SummaryRow icon={Layers} label="Jumlah Lantai" value={`${form.floors} Lantai`} />
                 <SummaryRow icon={BedDouble} label="Kamar Tidur" value={`${form.bedrooms} Kamar`} />
                 <SummaryRow icon={Palette} label="Gaya Arsitektur" value={<span className="capitalize">{form.style}</span>} />
@@ -424,11 +426,8 @@ const StepQuestionnaire = ({
         <Input value={form.city} onChange={(e) => update("city", e.target.value)} placeholder="Mis. Jakarta Selatan" />
       </Field>
 
-      <SliderField label="Luas Tanah" value={`${form.landSize} m²`} className="lg:col-span-2">
+      <SliderField label="Luas Lahan / Tanah" value={`${form.landSize} m²`} className="lg:col-span-2">
         <Slider min={50} max={1000} step={10} value={[form.landSize]} onValueChange={(v) => update("landSize", v[0])} />
-      </SliderField>
-      <SliderField label="Luas Bangunan" value={`${form.buildingSize} m²`} className="lg:col-span-2">
-        <Slider min={36} max={800} step={6} value={[form.buildingSize]} onValueChange={(v) => update("buildingSize", v[0])} />
       </SliderField>
 
       <Field label="Jumlah Lantai">
@@ -535,8 +534,9 @@ const StepEstimate = ({ form, estimate }: { form: FormState; estimate: any }) =>
         Berdasarkan input Anda, berikut estimasi anggaran pembangunan dan biaya desain.
       </p>
       <div className="rounded-2xl border border-border bg-muted/30 p-6 grid grid-cols-2 gap-4 text-sm">
-        <KV k="Luas Bangunan" v={`${form.buildingSize} m²`} />
+        <KV k="Luas Tanah" v={`${form.landSize} m²`} />
         <KV k="Jumlah Lantai" v={form.floors} />
+        <KV k="Luas Bangunan (Estimasi)" v={`${estimate.builtArea} m²`} />
         <KV k="Gaya" v={<span className="capitalize">{form.style}</span>} />
         <KV k="Tier" v={<span className="capitalize">{form.budgetTier}</span>} />
         <KV k="Harga / m²" v={formatIDR(estimate.perM2)} />
@@ -549,7 +549,7 @@ const StepEstimate = ({ form, estimate }: { form: FormState; estimate: any }) =>
         <div className="mt-3 text-3xl font-bold lg:text-4xl">{formatIDR(estimate.total)}</div>
         <div className="mt-6 space-y-3 border-t border-white/10 pt-5 text-sm">
           <div className="flex items-center justify-between">
-            <span className="text-secondary-foreground/70">Biaya Desain (≈4%)</span>
+            <span className="text-secondary-foreground/70">Biaya Desain <span className="text-[11px]">(Rp 200rb/m²)</span></span>
             <span className="font-semibold">{formatIDR(estimate.designFee)}</span>
           </div>
           <div className="flex items-center justify-between">
@@ -558,7 +558,7 @@ const StepEstimate = ({ form, estimate }: { form: FormState; estimate: any }) =>
           </div>
         </div>
         <p className="mt-5 text-xs text-secondary-foreground/60">
-          Commitment fee bersifat refundable & dipotong dari biaya desain final.
+          Commitment fee bersifat non-refundable dan terpisah dari biaya desain.
         </p>
       </div>
     </div>
@@ -577,7 +577,8 @@ const StepCommitment = ({ estimate, onPay }: { estimate: any; onPay: () => void 
     <div className="lg:col-span-3 rounded-3xl border border-border bg-background p-5 lg:p-6 xl:p-8 space-y-5">
       <h2 className="text-2xl font-bold tracking-tight">Commitment Fee</h2>
       <p className="text-sm text-muted-foreground">
-        Bayar commitment fee untuk mengamankan slot tim arsitek AMP. Fee ini akan dipotong dari biaya desain final.
+        Bayar commitment fee untuk mengamankan slot tim arsitek AMP dan memulai proses awal desain.
+        Commitment fee bersifat <span className="font-semibold text-foreground">non-refundable</span> dan <span className="font-semibold text-foreground">terpisah</span> dari biaya desain.
       </p>
       <ul className="space-y-3">
         {[
@@ -585,7 +586,7 @@ const StepCommitment = ({ estimate, onPay }: { estimate: any; onPay: () => void 
           "Konsultasi awal dengan principal architect",
           "Site visit & analisa lokasi",
           "Mood board awal & arah konsep desain",
-          "100% dipotong dari biaya desain bila lanjut",
+          "Estimasi & rekomendasi paket desain final",
         ].map((b) => (
           <li key={b} className="flex items-start gap-3 text-sm">
             <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
@@ -595,6 +596,9 @@ const StepCommitment = ({ estimate, onPay }: { estimate: any; onPay: () => void 
           </li>
         ))}
       </ul>
+      <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-[11px] leading-relaxed text-amber-900">
+        <strong>Catatan:</strong> Commitment fee tidak dapat dikembalikan dan tidak dipotong dari biaya desain. Fee ini menjamin slot pengerjaan tim arsitek AMP & cakupan layanan awal di atas.
+      </div>
     </div>
     <div className="lg:col-span-2">
       <div className="rounded-3xl border border-border bg-background p-7 shadow-elevated">
