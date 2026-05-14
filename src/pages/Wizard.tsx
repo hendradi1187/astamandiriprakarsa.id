@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
@@ -31,6 +31,7 @@ import {
   PenTool,
   Box,
   CheckCircle2,
+  Loader2,
 } from "lucide-react";
 import logo from "@/assets/amp-logo.png";
 import heroVilla from "@/assets/hero-villa.jpg";
@@ -44,6 +45,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/lib/supabase";
+import type { ArsitekturBriefData } from "@/lib/services";
+import { useAuth } from "@/contexts/AuthContext";
 
 type Style = "modern" | "tropical" | "minimalist" | "classic";
 type DesignPackageId = "p1" | "p2" | "p3" | "p4";
@@ -194,9 +198,17 @@ const designProcess = [
 ];
 
 const Wizard = () => {
+  const navigate = useNavigate();
+  const { user, profile } = useAuth();
   const [step, setStep] = useState(1);
-  const [form, setForm] = useState<FormState>(initialForm);
+  const [form, setForm] = useState<FormState>(() => ({
+    ...initialForm,
+    name: profile?.full_name || "",
+    phone: profile?.phone || "",
+    city: profile?.city || "",
+  }));
   const [paid, setPaid] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [heroIdx, setHeroIdx] = useState(0);
   const [floorTab, setFloorTab] = useState<1 | 2>(1);
 
@@ -250,12 +262,58 @@ const Wizard = () => {
   };
   const prev = () => setStep((s) => Math.max(1, s - 1));
 
-  const pay = () => {
-    setTimeout(() => {
+  const pay = async () => {
+    if (!user) {
+      toast({ title: "Sesi habis", description: "Silakan login ulang." });
+      navigate("/auth");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const briefData: ArsitekturBriefData = {
+        landSize: form.landSize,
+        floors: form.floors,
+        bedrooms: form.bedrooms,
+        style: form.style,
+        budgetTier: form.budgetTier,
+        designPackage: form.designPackage,
+        builtArea: estimate.builtArea,
+      };
+      const { data, error } = await supabase
+        .from("projects")
+        .insert({
+          client_id: user.id,
+          service_type: "arsitektur_baru",
+          status: "brief_submitted",
+          brief_data: briefData,
+          estimate_total: estimate.total,
+          estimate_design_fee: estimate.designFee,
+          commitment_fee: estimate.commitment,
+          estimated_weeks: estimate.weeks,
+          client_name: form.name,
+          client_phone: form.phone,
+          client_email: form.email || user.email,
+          client_city: form.city,
+          notes: form.notes || null,
+        })
+        .select("id")
+        .single();
+
+      if (error) throw error;
+
+      // TODO Phase 1.5: trigger Midtrans Snap di sini, untuk sekarang mock saja
       setPaid(true);
       setStep(4);
-      toast({ title: "Pembayaran berhasil", description: "Tim arsitek AMP akan menghubungi Anda." });
-    }, 700);
+      toast({
+        title: "Brief berhasil dikirim!",
+        description: `Project #${data.id.slice(0, 8).toUpperCase()} dibuat. Tim arsitek AMP akan menghubungi via WhatsApp.`,
+      });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Terjadi kesalahan.";
+      toast({ title: "Gagal submit", description: msg });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -452,9 +510,18 @@ const Wizard = () => {
               {step === 3 ? (
                 <button
                   onClick={pay}
-                  className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-red hover:shadow-glow transition"
+                  disabled={submitting}
+                  className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-red hover:shadow-glow transition disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  Bayar Sekarang <ArrowRight className="h-4 w-4" />
+                  {submitting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" /> Menyimpan...
+                    </>
+                  ) : (
+                    <>
+                      Bayar Sekarang <ArrowRight className="h-4 w-4" />
+                    </>
+                  )}
                 </button>
               ) : (
                 <button
