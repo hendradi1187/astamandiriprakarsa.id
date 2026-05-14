@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Home, Sofa, Calculator, FileText, LogOut, LayoutDashboard, Clock, Wallet } from "lucide-react";
 import { services, type ServiceConfig } from "@/lib/services";
 import { useAuth } from "@/contexts/AuthContext";
-import logo from "@/assets/amp-logo.png";
+import logo from "@/assets/amp-logotype.png";
 
 const serviceIcons: Record<ServiceConfig["id"], typeof Home> = {
   arsitektur_baru: Home,
@@ -21,14 +21,8 @@ const Mulai = () => {
       {/* TOP BAR */}
       <header className="border-b border-border bg-background">
         <div className="mx-auto flex max-w-[1200px] items-center justify-between px-4 py-4 lg:px-8">
-          <Link to="/" className="flex items-center gap-3">
-            <img src={logo} alt="AMP" className="h-9 w-9 object-contain" />
-            <div className="leading-tight">
-              <div className="text-lg font-extrabold tracking-tight">AMP</div>
-              <div className="text-[9px] tracking-[0.2em] text-muted-foreground font-semibold">
-                ASTA MANDIRI PRAKARSA
-              </div>
-            </div>
+          <Link to="/" className="flex items-center">
+            <img src={logo} alt="AMP — Asta Mandiri Prakarsa" className="h-9 w-auto object-contain" />
           </Link>
           <div className="flex items-center gap-2">
             <Link

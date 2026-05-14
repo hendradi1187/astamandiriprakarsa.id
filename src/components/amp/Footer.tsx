@@ -1,5 +1,5 @@
 import { Instagram, Linkedin, Facebook, Mail, Phone, MapPin } from "lucide-react";
-import logo from "@/assets/amp-logo.png";
+import logo from "@/assets/amp-logotype.png";
 
 const cols = [
   {
@@ -21,14 +21,8 @@ export const Footer = () => (
     <div className="mx-auto max-w-7xl px-6 py-20 lg:px-10">
       <div className="grid grid-cols-1 gap-12 lg:grid-cols-12">
         <div className="lg:col-span-4">
-          <div className="flex items-center gap-3">
-            <div className="rounded-xl bg-white p-2">
-              <img src={logo} alt="AMP" className="h-8 w-8 object-contain" />
-            </div>
-            <div className="leading-tight">
-              <div className="text-[10px] tracking-[0.22em] text-secondary-foreground/60">ASTA MANDIRI</div>
-              <div className="text-base font-bold">PRAKARSA</div>
-            </div>
+          <div className="inline-flex rounded-xl bg-white px-3 py-2">
+            <img src={logo} alt="AMP — Asta Mandiri Prakarsa" className="h-10 w-auto object-contain" />
           </div>
           <p className="mt-6 max-w-sm text-sm leading-relaxed text-secondary-foreground/70">
             Platform desain & estimasi rumah modern. Wujudkan hunian impian Anda bersama tim arsitek profesional.

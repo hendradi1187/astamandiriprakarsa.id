@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, Mail, Lock, User, Phone, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
-import logo from "@/assets/amp-logo.png";
+import logo from "@/assets/amp-logotype.png";
 
 type Mode = "login" | "register";
 
@@ -58,13 +58,9 @@ const Auth = () => {
     <main className="min-h-screen bg-muted/30 grid lg:grid-cols-2">
       {/* LEFT — branding */}
       <aside className="hidden lg:flex flex-col justify-between bg-gradient-to-br from-primary to-primary/80 text-primary-foreground p-12">
-        <Link to="/" className="inline-flex items-center gap-3">
-          <img src={logo} alt="AMP" className="h-12 w-12 object-contain" />
-          <div className="leading-tight">
-            <div className="text-2xl font-extrabold tracking-tight">AMP</div>
-            <div className="text-[10px] tracking-[0.22em] opacity-80 font-semibold">
-              ASTA MANDIRI<br />PRAKARSA
-            </div>
+        <Link to="/" className="inline-flex">
+          <div className="rounded-2xl bg-white px-4 py-3">
+            <img src={logo} alt="AMP — Asta Mandiri Prakarsa" className="h-10 w-auto object-contain" />
           </div>
         </Link>
         <div>

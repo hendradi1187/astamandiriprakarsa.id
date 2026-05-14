@@ -33,7 +33,7 @@ import {
   CheckCircle2,
   Loader2,
 } from "lucide-react";
-import logo from "@/assets/amp-logo.png";
+import logo from "@/assets/amp-logotype.png";
 import heroVilla from "@/assets/hero-villa.jpg";
 import projVilla from "@/assets/proj-villa.jpg";
 import projTropical from "@/assets/proj-tropical.jpg";
@@ -323,14 +323,8 @@ const Wizard = () => {
         <aside className="lg:sticky lg:top-0 lg:h-screen lg:w-[280px] xl:w-[300px] lg:flex-shrink-0 border-b lg:border-b-0 lg:border-r border-border bg-background">
           <div className="flex h-full flex-col p-6">
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-3">
-              <img src={logo} alt="AMP" className="h-10 w-10 object-contain" />
-              <div className="leading-tight">
-                <div className="text-2xl font-extrabold tracking-tight">AMP</div>
-                <div className="text-[9px] tracking-[0.22em] text-muted-foreground font-semibold">
-                  ASTA MANDIRI<br />PRAKARSA
-                </div>
-              </div>
+            <Link to="/" className="flex items-center">
+              <img src={logo} alt="AMP — Asta Mandiri Prakarsa" className="h-10 w-auto object-contain" />
             </Link>
 
             <Link

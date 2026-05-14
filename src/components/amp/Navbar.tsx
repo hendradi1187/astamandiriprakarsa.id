@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
-import logo from "@/assets/amp-logo.png";
+import logo from "@/assets/amp-logotype.png";
 
 const links = [
   { label: "Beranda", href: "#hero" },
@@ -29,12 +29,8 @@ export const Navbar = () => {
       }`}
     >
       <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 lg:h-20 lg:px-10">
-        <a href="#hero" className="flex items-center gap-3 group">
-          <img src={logo} alt="ASTA MANDIRI PRAKARSA" className="h-9 w-9 lg:h-10 lg:w-10 object-contain" />
-          <div className="leading-tight">
-            <div className="text-[10px] lg:text-[11px] tracking-[0.22em] text-muted-foreground font-medium">ASTA MANDIRI</div>
-            <div className="text-sm lg:text-base font-bold tracking-tight text-foreground">PRAKARSA</div>
-          </div>
+        <a href="#hero" className="flex items-center group">
+          <img src={logo} alt="AMP — Asta Mandiri Prakarsa" className="h-9 lg:h-10 w-auto object-contain" />
         </a>
 
         <ul className="hidden lg:flex items-center gap-1">

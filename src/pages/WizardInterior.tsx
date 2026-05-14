@@ -17,7 +17,7 @@ import { supabase } from "@/lib/supabase";
 import { INTERIOR_PRICE_PER_M2, type InteriorBriefData } from "@/lib/services";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
-import logo from "@/assets/amp-logo.png";
+import logo from "@/assets/amp-logotype.png";
 import { Slider } from "@/components/ui/slider";
 
 const ROOM_OPTIONS = [
@@ -125,14 +125,8 @@ const WizardInterior = () => {
     <main className="min-h-screen bg-muted/30">
       <header className="border-b border-border bg-background">
         <div className="mx-auto flex max-w-[1200px] items-center justify-between px-4 py-4 lg:px-8">
-          <Link to="/" className="flex items-center gap-3">
-            <img src={logo} alt="AMP" className="h-9 w-9 object-contain" />
-            <div className="leading-tight">
-              <div className="text-lg font-extrabold tracking-tight">AMP</div>
-              <div className="text-[9px] tracking-[0.2em] text-muted-foreground font-semibold">
-                ASTA MANDIRI PRAKARSA
-              </div>
-            </div>
+          <Link to="/" className="flex items-center">
+            <img src={logo} alt="AMP — Asta Mandiri Prakarsa" className="h-9 w-auto object-contain" />
           </Link>
           <Link to="/mulai" className="text-xs text-muted-foreground hover:text-foreground inline-flex items-center gap-1">
             <ArrowLeft className="h-3.5 w-3.5" /> Pilih Layanan Lain
