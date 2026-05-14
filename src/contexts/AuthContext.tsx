@@ -43,26 +43,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     let mounted = true;
 
-    // Initial session check
-    supabase.auth.getSession().then(async ({ data: { session: s } }) => {
+    // Profile fetch dipisah dari auth state — best-effort, gak boleh nge-block loading.
+    const loadProfile = (uid: string) => {
+      fetchProfile(uid).then((p) => {
+        if (mounted) setProfile(p);
+      });
+    };
+
+    supabase.auth.getSession().then(({ data: { session: s } }) => {
       if (!mounted) return;
       setSession(s);
       setUser(s?.user ?? null);
-      if (s?.user) {
-        const p = await fetchProfile(s.user.id);
-        if (mounted) setProfile(p);
-      }
       setLoading(false);
+      if (s?.user) loadProfile(s.user.id);
     });
 
-    // Listener untuk perubahan auth state
-    const { data: subscription } = supabase.auth.onAuthStateChange(async (_event, s) => {
+    const { data: subscription } = supabase.auth.onAuthStateChange((_event, s) => {
       if (!mounted) return;
       setSession(s);
       setUser(s?.user ?? null);
       if (s?.user) {
-        const p = await fetchProfile(s.user.id);
-        if (mounted) setProfile(p);
+        loadProfile(s.user.id);
       } else {
         setProfile(null);
       }
