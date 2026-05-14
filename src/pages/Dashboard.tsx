@@ -13,6 +13,7 @@ import {
   Wallet,
   Loader2,
   Inbox,
+  UserCircle,
 } from "lucide-react";
 import { supabase, type Project, type ServiceType, type ProjectStatus } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
@@ -88,15 +89,23 @@ const Dashboard = () => {
           <Link to="/" className="flex items-center">
             <img src={logo} alt="AMP — Asta Mandiri Prakarsa" className="h-9 w-auto object-contain" />
           </Link>
-          <button
-            onClick={async () => {
-              await signOut();
-              navigate("/");
-            }}
-            className="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-xs font-medium hover:bg-muted transition"
-          >
-            <LogOut className="h-3.5 w-3.5" /> Keluar
-          </button>
+          <div className="flex items-center gap-2">
+            <Link
+              to="/profile"
+              className="hidden sm:inline-flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-xs font-medium hover:bg-muted transition"
+            >
+              <UserCircle className="h-3.5 w-3.5" /> Profil
+            </Link>
+            <button
+              onClick={async () => {
+                await signOut();
+                navigate("/");
+              }}
+              className="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-xs font-medium hover:bg-muted transition"
+            >
+              <LogOut className="h-3.5 w-3.5" /> Keluar
+            </button>
+          </div>
         </div>
       </header>
 

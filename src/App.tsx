@@ -9,6 +9,7 @@ import Index from "./pages/Index.tsx";
 import Auth from "./pages/Auth.tsx";
 import Mulai from "./pages/Mulai.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
+import Profile from "./pages/Profile.tsx";
 import Wizard from "./pages/Wizard.tsx";
 import WizardInterior from "./pages/WizardInterior.tsx";
 import WizardRAB from "./pages/WizardRAB.tsx";
@@ -32,6 +33,7 @@ const App = () => (
             {/* Protected — butuh login */}
             <Route path="/mulai" element={<RequireAuth><Mulai /></RequireAuth>} />
             <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
+            <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
 
             {/* Wizard variants */}
             <Route path="/wizard" element={<RequireAuth><Wizard /></RequireAuth>} />

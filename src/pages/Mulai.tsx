@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, ArrowRight, Home, Sofa, Calculator, FileText, LogOut, LayoutDashboard, Clock, Wallet } from "lucide-react";
+import { ArrowLeft, ArrowRight, Home, Sofa, Calculator, FileText, LogOut, LayoutDashboard, Clock, Wallet, UserCircle } from "lucide-react";
 import { services, type ServiceConfig } from "@/lib/services";
 import { useAuth } from "@/contexts/AuthContext";
 import logo from "@/assets/amp-logotype.png";
@@ -30,6 +30,12 @@ const Mulai = () => {
               className="hidden sm:inline-flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-xs font-medium hover:bg-muted transition"
             >
               <LayoutDashboard className="h-3.5 w-3.5" /> Dashboard
+            </Link>
+            <Link
+              to="/profile"
+              className="hidden sm:inline-flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 text-xs font-medium hover:bg-muted transition"
+            >
+              <UserCircle className="h-3.5 w-3.5" /> Profil
             </Link>
             <button
               onClick={async () => {
