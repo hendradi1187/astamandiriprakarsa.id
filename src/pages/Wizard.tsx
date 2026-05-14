@@ -168,7 +168,7 @@ const Wizard = () => {
     <main className="min-h-screen bg-muted/30">
       <div className="mx-auto flex max-w-[1400px] flex-col lg:flex-row">
         {/* SIDEBAR */}
-        <aside className="lg:sticky lg:top-0 lg:h-screen lg:w-[300px] lg:flex-shrink-0 border-b lg:border-b-0 lg:border-r border-border bg-background">
+        <aside className="lg:sticky lg:top-0 lg:h-screen lg:w-[280px] xl:w-[300px] lg:flex-shrink-0 border-b lg:border-b-0 lg:border-r border-border bg-background">
           <div className="flex h-full flex-col p-6">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-3">
@@ -278,7 +278,7 @@ const Wizard = () => {
         </aside>
 
         {/* MAIN */}
-        <section className="flex-1 p-6 lg:p-10 space-y-6">
+        <section className="flex-1 p-4 sm:p-6 lg:p-6 xl:p-10 space-y-6">
           {/* Top bar: stepper + save */}
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <ol className="flex items-center gap-2 sm:gap-4 overflow-x-auto">
@@ -403,7 +403,7 @@ const StepQuestionnaire = ({
   form: FormState;
   update: <K extends keyof FormState>(k: K, v: FormState[K]) => void;
 }) => (
-  <div className="rounded-3xl border border-border bg-background p-6 lg:p-8 space-y-6">
+  <div className="rounded-3xl border border-border bg-background p-5 lg:p-6 xl:p-8 space-y-6">
     <div>
       <h2 className="text-2xl font-bold tracking-tight">Ceritakan rumah impian Anda</h2>
       <p className="mt-1 text-sm text-muted-foreground">
@@ -529,7 +529,7 @@ const Pill = ({ active, onClick, children }: { active: boolean; onClick: () => v
 /* ---------- STEP 2 ---------- */
 const StepEstimate = ({ form, estimate }: { form: FormState; estimate: any }) => (
   <div className="grid gap-6 lg:grid-cols-5">
-    <div className="lg:col-span-3 rounded-3xl border border-border bg-background p-6 lg:p-8 space-y-4">
+    <div className="lg:col-span-3 rounded-3xl border border-border bg-background p-5 lg:p-6 xl:p-8 space-y-4">
       <h2 className="text-2xl font-bold tracking-tight">Estimasi Proyek Anda</h2>
       <p className="text-sm text-muted-foreground">
         Berdasarkan input Anda, berikut estimasi anggaran pembangunan dan biaya desain.
@@ -574,7 +574,7 @@ const KV = ({ k, v }: { k: string; v: React.ReactNode }) => (
 /* ---------- STEP 3 ---------- */
 const StepCommitment = ({ estimate, onPay }: { estimate: any; onPay: () => void }) => (
   <div className="grid gap-6 lg:grid-cols-5">
-    <div className="lg:col-span-3 rounded-3xl border border-border bg-background p-6 lg:p-8 space-y-5">
+    <div className="lg:col-span-3 rounded-3xl border border-border bg-background p-5 lg:p-6 xl:p-8 space-y-5">
       <h2 className="text-2xl font-bold tracking-tight">Commitment Fee</h2>
       <p className="text-sm text-muted-foreground">
         Bayar commitment fee untuk mengamankan slot tim arsitek AMP. Fee ini akan dipotong dari biaya desain final.
@@ -639,7 +639,7 @@ const StepDesign = ({
   return (
     <>
       {/* AI Hero card */}
-      <div className="rounded-3xl border border-border bg-background p-6 lg:p-8">
+      <div className="rounded-3xl border border-border bg-background p-5 lg:p-6 xl:p-8">
         <div className="grid gap-6 lg:grid-cols-2 items-center">
           <div>
             <h2 className="text-3xl lg:text-4xl font-bold tracking-tight leading-tight">
@@ -689,7 +689,7 @@ const StepDesign = ({
 
       {/* Process strip */}
       <div className="rounded-2xl border border-border bg-background p-4 lg:p-5">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 xl:gap-4">
           {designProcess.map((p, i) => {
             const Icon = [ImageIcon, PenTool, Box, CheckCircle2][i];
             return (
@@ -716,7 +716,7 @@ const StepDesign = ({
       </div>
 
       {/* Moodboard */}
-      <div className="rounded-3xl border border-border bg-background p-6 lg:p-8">
+      <div className="rounded-3xl border border-border bg-background p-5 lg:p-6 xl:p-8">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-lg font-bold">
@@ -727,7 +727,7 @@ const StepDesign = ({
             Lihat Semua <ArrowRight className="h-3.5 w-3.5" />
           </button>
         </div>
-        <div className="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-3 xl:gap-4">
           {moodboards.map((m) => (
             <div key={m.label} className="group">
               <div className="overflow-hidden rounded-2xl">
@@ -740,7 +740,7 @@ const StepDesign = ({
       </div>
 
       {/* Concepts */}
-      <div className="rounded-3xl border border-border bg-background p-6 lg:p-8">
+      <div className="rounded-3xl border border-border bg-background p-5 lg:p-6 xl:p-8">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-lg font-bold">Konsep Desain Awal</h3>
@@ -776,9 +776,9 @@ const StepDesign = ({
       </div>
 
       {/* AI Insight + Floor Plan + Budget */}
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-4 xl:gap-6 lg:grid-cols-3">
         {/* AI Insight */}
-        <div className="rounded-3xl border border-border bg-background p-6 space-y-4">
+        <div className="rounded-3xl border border-border bg-background p-5 xl:p-6 space-y-4">
           <div>
             <h3 className="font-bold">AI Insight</h3>
             <p className="text-xs text-muted-foreground">Rekomendasi cerdas untuk hasil terbaik.</p>
@@ -809,7 +809,7 @@ const StepDesign = ({
         </div>
 
         {/* Floor plan */}
-        <div className="rounded-3xl border border-border bg-background p-6 space-y-4">
+        <div className="rounded-3xl border border-border bg-background p-5 xl:p-6 space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-bold">Preview Denah <span className="text-xs font-medium text-muted-foreground">(AI)</span></h3>
@@ -836,7 +836,7 @@ const StepDesign = ({
         </div>
 
         {/* Budget estimate */}
-        <div className="rounded-3xl border border-border bg-background p-6 space-y-4">
+        <div className="rounded-3xl border border-border bg-background p-5 xl:p-6 space-y-4">
           <div>
             <h3 className="font-bold">Estimasi Anggaran <span className="text-xs font-medium text-muted-foreground">(AI)</span></h3>
             <p className="text-xs text-muted-foreground">Perkiraan biaya berdasarkan tier <span className="capitalize">{form.budgetTier}</span>.</p>
