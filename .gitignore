@@ -24,5 +24,7 @@ dist-ssr
 *.sln
 *.sw?
 
-# Claude Code local files
-.claude/
+# Claude Code — share agents & agent-memory via git, keep local-only files out
+.claude/*
+!.claude/agents/
+!.claude/agent-memory/
