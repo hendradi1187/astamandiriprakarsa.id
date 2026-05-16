@@ -1,0 +1,16 @@
+node_modules/
+.env
+.env.local
+dist/
+*.log
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.python-version
+
+# OS
+.DS_Store
+Thumbs.db

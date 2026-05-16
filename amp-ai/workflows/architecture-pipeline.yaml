@@ -1,0 +1,32 @@
+workflow:
+  start: orchestrator-agent
+
+  orchestrator-agent:
+    next:
+      - founder-vision-agent
+
+  founder-vision-agent:
+    next:
+      - architect-agent
+
+  architect-agent:
+    next:
+      - prompt-composer-agent
+      - floorplan-agent
+      - rab-agent
+
+  prompt-composer-agent:
+    next:
+      - image-generator-agent
+
+  image-generator-agent:
+    next:
+      - presentation-agent
+
+  floorplan-agent:
+    next:
+      - presentation-agent
+
+  rab-agent:
+    next:
+      - presentation-agent

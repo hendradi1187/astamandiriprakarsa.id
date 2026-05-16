@@ -1,0 +1,5 @@
+name: founder-vision-agent
+
+model: claude-sonnet-4
+
+temperature: 0.2

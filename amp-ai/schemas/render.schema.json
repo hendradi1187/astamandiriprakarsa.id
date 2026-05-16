@@ -1,0 +1,17 @@
+{
+  "type": "object",
+  "properties": {
+    "prompt": {
+      "type": "string"
+    },
+    "style": {
+      "type": "string"
+    },
+    "resolution": {
+      "type": "string"
+    },
+    "engine": {
+      "type": "string"
+    }
+  }
+}

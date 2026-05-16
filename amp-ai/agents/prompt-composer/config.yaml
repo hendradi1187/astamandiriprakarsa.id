@@ -1,0 +1,5 @@
+name: prompt-composer-agent
+
+model: claude-sonnet-4
+
+temperature: 0.9

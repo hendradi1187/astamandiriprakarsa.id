@@ -1,0 +1,14 @@
+name: orchestrator-agent
+
+model: claude-opus-4
+
+temperature: 0.4
+
+memory:
+  enabled: true
+  type: vector
+
+handoff:
+  next:
+    - founder-vision-agent
+    - architect-agent

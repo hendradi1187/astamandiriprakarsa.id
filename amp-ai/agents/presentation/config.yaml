@@ -1,0 +1,5 @@
+name: presentation-agent
+
+model: claude-sonnet-4
+
+temperature: 0.5

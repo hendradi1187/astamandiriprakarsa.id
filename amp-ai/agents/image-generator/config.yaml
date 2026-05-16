@@ -1,0 +1,7 @@
+name: image-generator-agent
+
+engine: flux-pro
+
+resolution: 1536x1024
+
+quality: ultra

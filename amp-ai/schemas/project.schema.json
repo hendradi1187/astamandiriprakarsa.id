@@ -1,0 +1,23 @@
+{
+  "type": "object",
+  "properties": {
+    "project_type": {
+      "type": "string"
+    },
+    "style": {
+      "type": "string"
+    },
+    "budget": {
+      "type": "number"
+    },
+    "floors": {
+      "type": "number"
+    },
+    "bedrooms": {
+      "type": "number"
+    },
+    "terrain": {
+      "type": "string"
+    }
+  }
+}
